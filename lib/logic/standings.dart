@@ -111,8 +111,9 @@ List<StandingsEntry> computeStandings(
     }
   }
 
-  // Compute mwPct and gwPct per player
-  double mwPct(String id) {
+  // Floored helpers — used ONLY for opponent calculations (OMW%, OGW%)
+  // Per MTG rules: each opponent has a minimum mw/gw percentage of 33%
+  double flooredMwPct(String id) {
     final s = stats[id]!;
     final total = (s['matchWins'] as int) + (s['matchLosses'] as int) + (s['matchDraws'] as int);
     if (total == 0) return _floor;
@@ -120,12 +121,27 @@ List<StandingsEntry> computeStandings(
     return raw < _floor ? _floor : raw;
   }
 
-  double gwPct(String id) {
+  double flooredGwPct(String id) {
     final s = stats[id]!;
     final played = s['gamesPlayed'] as int;
     if (played == 0) return _floor;
     final raw = (s['gamesWon'] as int) / played.toDouble();
     return raw < _floor ? _floor : raw;
+  }
+
+  // Raw helpers — used for the player's own display values (no floor)
+  double rawMwPct(String id) {
+    final s = stats[id]!;
+    final total = (s['matchWins'] as int) + (s['matchLosses'] as int) + (s['matchDraws'] as int);
+    if (total == 0) return 0;
+    return (s['matchPoints'] as int) / (total * 3.0);
+  }
+
+  double rawGwPct(String id) {
+    final s = stats[id]!;
+    final played = s['gamesPlayed'] as int;
+    if (played == 0) return 0;
+    return (s['gamesWon'] as int) / played.toDouble();
   }
 
   // Second pass: compute OMW% and OGW% — output only active players
@@ -137,8 +153,8 @@ List<StandingsEntry> computeStandings(
     double omw = _floor;
     double ogw = _floor;
     if (opponents.isNotEmpty) {
-      omw = opponents.map(mwPct).reduce((a, b) => a + b) / opponents.length;
-      ogw = opponents.map(gwPct).reduce((a, b) => a + b) / opponents.length;
+      omw = opponents.map(flooredMwPct).reduce((a, b) => a + b) / opponents.length;
+      ogw = opponents.map(flooredGwPct).reduce((a, b) => a + b) / opponents.length;
       if (omw < _floor) omw = _floor;
       if (ogw < _floor) ogw = _floor;
     }
@@ -152,8 +168,8 @@ List<StandingsEntry> computeStandings(
       gamesWon: s['gamesWon'] as int,
       gamesLost: s['gamesLost'] as int,
       gamesPlayed: s['gamesPlayed'] as int,
-      mwPct: mwPct(id),
-      gwPct: gwPct(id),
+      mwPct: rawMwPct(id),
+      gwPct: rawGwPct(id),
       omwPct: omw,
       ogwPct: ogw,
       hasBye: s['hasBye'] as bool,

@@ -4,7 +4,7 @@ import 'storage_service.dart';
 
 class GitHubService {
   static const _owner = 'DimlasZ';
-  static const _repo = 'TournamentOrganizer-NativeReact';
+  static const _repo = 'TournamentOrganizer-Flutter';
 
   static String? getStoredToken() => StorageService.loadGhToken();
   static Future<void> setStoredToken(String token) => StorageService.saveGhToken(token);
@@ -51,7 +51,12 @@ class GitHubService {
         await clearStoredToken();
         return (ok: false, message: 'Invalid token — cleared. Please re-enter.');
       } else {
-        return (ok: false, message: 'Upload failed (${putRes.statusCode})');
+        String detail = '';
+        try {
+          final body = jsonDecode(putRes.body) as Map<String, dynamic>;
+          detail = body['message'] as String? ?? '';
+        } catch (_) {}
+        return (ok: false, message: 'Upload failed (${putRes.statusCode})${detail.isNotEmpty ? ': $detail' : ''}');
       }
     } catch (e) {
       return (ok: false, message: 'Network error: $e');

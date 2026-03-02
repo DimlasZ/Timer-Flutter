@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -Command \"Remove-Item -Recurse -Force ''C:\\\\Users\\\\Dimlas\\\\Desktop\\\\Dimi\\\\Github\\\\Timer-Flutter\\\\build\\\\app\\\\intermediates\\\\assets\\\\debug\\\\mergeDebugAssets'' -ErrorAction SilentlyContinue; Write-Host ''Done''\")",
+      "Bash(gh repo rename TournamentOrganizer-Flutter --yes)",
+      "Bash(gh api repos/DimlasZ/TournamentOrganizer-Flutter/contents/results)"
+    ]
+  }
+}

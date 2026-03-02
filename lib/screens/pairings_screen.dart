@@ -364,7 +364,7 @@ class _PairingsScreenState extends State<PairingsScreen> {
       setState(() => _swapSelectedId = null);
     } else {
       tp.swapPlayers(_swapSelectedId!, playerId);
-      setState(() { _swapMode = false; _swapSelectedId = null; });
+      setState(() => _swapSelectedId = null);
     }
   }
 
